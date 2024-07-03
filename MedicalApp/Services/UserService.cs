@@ -1,5 +1,6 @@
 ﻿using MedicalApp.Exceptions;
 using MedicalApp.Models;
+using MedicalApp.Utilities;
 
 namespace MedicalApp.Services;
 
@@ -13,7 +14,7 @@ public class UserService
                 return user;
         }
 
-        throw new NotFoundException("User not found");
+        throw new UserNotFoundException("User not found");
     }
 
     public void AddUser(User user)
@@ -27,12 +28,8 @@ public class UserService
         }
         Array.Resize(ref DB.users, DB.users.Length + 1);
         DB.users[^1] = user;
-        Console.WriteLine("User succesfully Added");
+        Colored.WriteLine("User succesfully created!", ConsoleColor.Green);
     }
 
-    public void CreateCategory(Category category)
-    {
-        Array.Resize(ref DB.categories, DB.categories.Length + 1);
-        DB.categories[^1] = category;
-    }
+
 }

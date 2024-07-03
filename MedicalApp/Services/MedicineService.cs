@@ -1,12 +1,13 @@
 ﻿using MedicalApp.Exceptions;
 using MedicalApp.Models;
+using MedicalApp.Utilities;
 
 namespace MedicalApp.Services;
 
 public class MedicineService 
 {
 
-    public Medicine CreateMedicine(Medicine medicine)
+    public void CreateMedicine(Medicine medicine)
     {
         foreach (var category in DB.categories)
         {
@@ -14,6 +15,8 @@ public class MedicineService
             {
                 Array.Resize(ref DB.medicines, DB.medicines.Length + 1);
                 DB.medicines[^1] = medicine;
+                Colored.WriteLine("Medicine succesfully created!", ConsoleColor.Green);
+                return;
             }
         }
         throw new NotFoundException("Category is not found");
@@ -68,7 +71,7 @@ public class MedicineService
                     DB.medicines[j] = DB.medicines[j + 1];
                 }
                 Array.Resize(ref DB.medicines, DB.medicines.Length - 1);
-                Console.WriteLine("Medicine removed succesfully");
+                Colored.WriteLine("User succesfully removed!", ConsoleColor.Green);
                 return;
             }
         }
@@ -81,7 +84,10 @@ public class MedicineService
         {
             if (DB.medicines[i].Id == id)
             {
-                DB.medicines[i] = medicine;
+                DB.medicines[i].Name = medicine.Name;
+                DB.medicines[i].Price = medicine.Price;
+                DB.medicines[i].CategoryId = medicine.CategoryId;
+                Colored.WriteLine("User succesfully updated!", ConsoleColor.Green);
                 return;
             }
         }

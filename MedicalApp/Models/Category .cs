@@ -11,7 +11,7 @@ public class Category : BaseEntity
     }
     public override string ToString()
     {
-        return $"Name: {Name}, Id: {Id}";
+        return $"Category Name: {Name}, Id: {Id}";
     }
 
 }

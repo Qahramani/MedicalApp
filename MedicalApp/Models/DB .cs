@@ -14,6 +14,7 @@ public static class DB
 
     public static void PrintUsersInfo()
     {
+        Console.WriteLine("- Users List -");
         foreach (var user in users)
         {
             Console.WriteLine(user);
@@ -21,6 +22,7 @@ public static class DB
     }
     public static void PrintCategoriesInfo()
     {
+        Console.WriteLine("- Categories List -");
         foreach (var category in categories)
         {
             Console.WriteLine(category);
@@ -28,6 +30,7 @@ public static class DB
     }
     public static void PrintMedicinesInfo()
     {
+        Console.WriteLine("- Medicines List -");
         foreach (var medicine in medicines)
         {
             Console.WriteLine(medicine);
