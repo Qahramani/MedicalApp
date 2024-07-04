@@ -96,7 +96,6 @@ public class Program
                 Console.Write("Id: ");
                 int medicineId = int.Parse(Console.ReadLine());
                 medicineService.RemoveMedicine(medicineId);
-
                 }
                 catch (NotFoundException ex)
                 {
