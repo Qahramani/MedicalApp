@@ -12,6 +12,7 @@ public class Program
         UserService userService = new UserService();
         MedicineService medicineService = new MedicineService();
         CategoryService categoryService = new CategoryService();
+        User myUser = new("", "", "");
     restartUserMenu:
         Console.WriteLine("----- User Menu -----");
         Console.Write("[1] Create user\n" +
@@ -24,110 +25,132 @@ public class Program
         {
             case "1":
                 CreateUser(userService);
-                break;
+                goto restartUserMenu;
+
             case "2":
-            #region Login Process
-            restartLoginProcces:
+                #region Login Process
+
                 Console.WriteLine("----- Login Process -----");
                 Console.Write("Email: ");
                 string email = Console.ReadLine();
                 Console.Write("Password: ");
                 string password = Console.ReadLine();
-            restartMedicineServiceMenu:
 
                 try
                 {
-                    User myUser = userService.Login(email, password);
+                    myUser = userService.Login(email, password);
+                    Console.Clear();
+                    break;
+                }
+                catch (UserNotFoundException ex)
+                {
+                    Colored.WriteLine($"Error: {ex.Message}", ConsoleColor.Red);
+                    goto restartUserMenu;
+                }
+                catch (Exception ex)
+                {
+                    Colored.WriteLine($"Error: {ex.Message}", ConsoleColor.Red);
+                }
+                goto restartUserMenu;
+            #endregion
+            case "0":
+                Colored.WriteLine("Goodbye!", ConsoleColor.DarkYellow);
+                return;
+            default:
+                Console.WriteLine("Please enter valid option");
+                goto restartUserMenu;
+        }
+        Console.Clear();
+        Console.WriteLine($"Welcome, {myUser.Fullname}!");
 
-                    Console.WriteLine($"Welcome, {myUser.Fullname}!");
-                    Console.WriteLine("----- Medicine service Menu -----");
-                    Console.Write("[1] Create Medicine\n" +
-                        "[2] Remove Medicine\n" +
-                        "[3] Update Medicine\n" +
-                        "[4] Get Medicine\n" +
-                        "[5] Create Category\n" +
-                        "[0] Exit\n" +
-                        ">>> ");
-                    option = Console.ReadLine();
-                    switch (option)
-                    {
-                        case "1":
-                            var tempMedForCreate = CreateMedicine(myUser.Id);
-                            if (!(tempMedForCreate == null))
-                            {
-                                medicineService.CreateMedicine(tempMedForCreate);
-                            }
-                            else
-                            {
-                                Colored.WriteLine("Category is not found", ConsoleColor.Red);
-                            }
-                            break;
-                        case "2":
-                            Console.WriteLine("----- Remove Process -----");
-                            DB.PrintMedicinesInfo();
-                            Console.Write("Id: ");
-                            int medicineId = int.Parse(Console.ReadLine());
-                            medicineService.RemoveMedicine(medicineId);
-                            break;
-                        case "3":
-                            Console.WriteLine("----- Update Process -----");
-                            DB.PrintMedicinesInfo();
-                            Console.Write("Id of medicine that you want update: ");
-                            int Id = int.Parse(Console.ReadLine());
+    restartMedicineMenu:
 
-                            var tempMedForUpdate = CreateMedicine(myUser.Id);
-                            if (!(tempMedForUpdate == null))
-                            {
-                                medicineService.UpdateMedicine(Id, tempMedForUpdate);
-                            }
-                            else
-                            {
-                                Colored.WriteLine("Category is not found", ConsoleColor.Red);
-                            }
-
-                            break;
-                        case "4":
-                            GetMedicineBY(medicineService);
-                            break;
-                        case "5":
-                            Console.WriteLine("----- Category creation process -----");
-                            Console.Write("Category Name: ");
-                            string categoryName = Console.ReadLine();
-                            categoryService.CreateCategory(new Category(categoryName));
-                            break;
-                        case "0":
-                            return;
-                        default:
-                            Console.WriteLine("Please enter valid input");
-                            break;
-                    }
+        Console.WriteLine("----- Medicine service Menu -----");
+        Console.Write("[1] Create Medicine\n" +
+            "[2] Remove Medicine\n" +
+            "[3] Update Medicine\n" +
+            "[4] Get Medicine\n" +
+            "[5] Create Category\n" +
+            "[6] Print all categories\n" +
+            "[0] Exit\n" +
+            ">>> ");
+        option = Console.ReadLine();
+        switch (option)
+        {
+            case "1":
+                var tempMedForCreate = CreateMedicine(myUser.Id);
+                if (!(tempMedForCreate == null))
+                {
+                    medicineService.CreateMedicine(tempMedForCreate);
+                }
+                else
+                {
+                    Colored.WriteLine("Category is not found", ConsoleColor.Red);
+                }
+                goto restartMedicineMenu;
+            case "2":
+                try
+                {
+                Console.WriteLine("----- Remove Process -----");
+                DB.PrintMedicinesInfo();
+                Console.Write("Id: ");
+                int medicineId = int.Parse(Console.ReadLine());
+                medicineService.RemoveMedicine(medicineId);
 
                 }
                 catch (NotFoundException ex)
                 {
                     Colored.WriteLine($"Error: {ex.Message}", ConsoleColor.Red);
                 }
-                catch (UserNotFoundException ex)
+                goto restartMedicineMenu;
+            case "3":
+                try
                 {
-                    Colored.WriteLine($"Error: {ex.Message}", ConsoleColor.Red);
-                    goto restartLoginProcces;
-                }
-                catch (Exception ex)
-                {
-                    Colored.WriteLine($"Error: {ex.Message}", ConsoleColor.Red);
-                }
-                goto restartMedicineServiceMenu;
 
-            #endregion
+                Console.WriteLine("----- Update Process -----");
+                DB.PrintMedicinesInfo();
+                Console.Write("Id of medicine that you want update: ");
+                int Id = int.Parse(Console.ReadLine());
+
+                var tempMedForUpdate = CreateMedicine(myUser.Id);
+                if (!(tempMedForUpdate == null))
+                {
+                    medicineService.UpdateMedicine(Id, tempMedForUpdate);
+                }
+                else
+                {
+                    Colored.WriteLine("Category is not found", ConsoleColor.Red);
+                }
+                }
+                catch (NotFoundException ex)
+                {
+                    Colored.WriteLine($"Error: {ex.Message}", ConsoleColor.Red);
+                }
+
+
+                goto restartMedicineMenu;
+            case "4":
+                Console.Clear();
+                GetMedicineBY(medicineService);
+                goto restartMedicineMenu;
+            case "5":
+                Console.WriteLine("----- Category creation process -----");
+                Console.Write("Category Name: ");
+                string categoryName = Console.ReadLine();
+                categoryService.CreateCategory(new Category(categoryName));
+                goto restartMedicineMenu;
+            case "6":
+                Console.WriteLine("----- Categories List -----");
+                DB.PrintCategoriesInfo();
+                goto restartMedicineMenu;
             case "0":
-                return;
-            default:
-                Console.WriteLine("Please enter valid option");
+                Console.Clear();
                 break;
-
+            default:
+                Console.WriteLine("Please enter valid input");
+                goto restartMedicineMenu;
         }
         goto restartUserMenu;
-
     }
 
     private static void GetMedicineBY(MedicineService medicineService)
@@ -170,6 +193,7 @@ public class Program
                     DB.PrintMedicinesInfo();
                     break;
                 case "0":
+                    Console.Clear();
                     return;
                 default:
                     Console.WriteLine("Please enter valid input");
