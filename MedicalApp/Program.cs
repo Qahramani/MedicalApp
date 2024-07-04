@@ -91,13 +91,17 @@ public class Program
             case "2":
                 try
                 {
-                Console.WriteLine("----- Remove Process -----");
-                DB.PrintMedicinesInfo();
-                Console.Write("Id: ");
-                int medicineId = int.Parse(Console.ReadLine());
-                medicineService.RemoveMedicine(medicineId);
+                    Console.WriteLine("----- Remove Process -----");
+                    DB.PrintMedicinesInfo();
+                    Console.Write("Id: ");
+                    int medicineId = int.Parse(Console.ReadLine());
+                    medicineService.RemoveMedicine(medicineId);
                 }
                 catch (NotFoundException ex)
+                {
+                    Colored.WriteLine($"Error: {ex.Message}", ConsoleColor.Red);
+                }
+                catch (Exception ex)
                 {
                     Colored.WriteLine($"Error: {ex.Message}", ConsoleColor.Red);
                 }
@@ -106,27 +110,25 @@ public class Program
                 try
                 {
 
-                Console.WriteLine("----- Update Process -----");
-                DB.PrintMedicinesInfo();
-                Console.Write("Id of medicine that you want update: ");
-                int Id = int.Parse(Console.ReadLine());
+                    Console.WriteLine("----- Update Process -----");
+                    DB.PrintMedicinesInfo();
+                    Console.Write("Id of medicine that you want update: ");
+                    int Id = int.Parse(Console.ReadLine());
+                    var tempMedForUpdate = CreateMedicine(myUser.Id);
+                    if (!(tempMedForUpdate == null))
+                        medicineService.UpdateMedicine(Id, tempMedForUpdate);
+                    else
+                        Colored.WriteLine("Category is not found", ConsoleColor.Red);
 
-                var tempMedForUpdate = CreateMedicine(myUser.Id);
-                if (!(tempMedForUpdate == null))
-                {
-                    medicineService.UpdateMedicine(Id, tempMedForUpdate);
-                }
-                else
-                {
-                    Colored.WriteLine("Category is not found", ConsoleColor.Red);
-                }
                 }
                 catch (NotFoundException ex)
                 {
                     Colored.WriteLine($"Error: {ex.Message}", ConsoleColor.Red);
                 }
-
-
+                catch(Exception ex)
+                {
+                    Colored.WriteLine($"Error: {ex.Message}", ConsoleColor.Red);
+                }
                 goto restartMedicineMenu;
             case "4":
                 Console.Clear();
@@ -172,6 +174,8 @@ public class Program
                 case "1":
                     Console.Write("Medicine id: ");
                     int medicineId = int.Parse(Console.ReadLine());
+
+                    // bool isIdCorrect = int.Parse(Console.ReadLine(), out medicineId);
                     Console.WriteLine(medicineService.GetMedicineById(medicineId));
                     break;
                 case "2":
@@ -203,6 +207,10 @@ public class Program
         {
             Colored.WriteLine($"Error: {ex.Message}", ConsoleColor.Red);
         }
+        catch (Exception ex)
+        {
+            Colored.WriteLine($"Error: {ex.Message}", ConsoleColor.Red);
+        }
         goto restartGetMedicineMenu;
     }
 
@@ -214,16 +222,24 @@ public class Program
         string medicineName = Console.ReadLine();
         Console.Write("Price: ");
         double medicinePrice;
-        bool isCorrect = double.TryParse(Console.ReadLine(), out medicinePrice);
-        if (!isCorrect)
+        bool isPriceCorrect = double.TryParse(Console.ReadLine(), out medicinePrice);
+        if (!isPriceCorrect)
         {
             Colored.WriteLine("Invalid input for price", ConsoleColor.Red);
             goto restartCreation;
         }
+
         Console.WriteLine("Choose category: ");
         DB.PrintCategoriesInfo();
         Console.Write("Category Id: ");
-        int categoryId = int.Parse(Console.ReadLine());
+        int categoryId;
+
+        bool isIdCorrect = int.TryParse(Console.ReadLine(), out categoryId);
+        if (!isIdCorrect)
+        {
+            Colored.WriteLine("Error: Input string was not in a correct format.", ConsoleColor.Red);
+            goto restartCreation;
+        }
 
         foreach (var category in DB.categories)
         {
