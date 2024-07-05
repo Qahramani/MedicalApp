@@ -96,10 +96,10 @@ public class Program
                 try
                 {
                     Console.WriteLine("----- Remove Process -----");
-                    DB.PrintMedicinesInfo();
+                    DB.PrintMedicinesInfo(myUser.Id);
                     Console.Write("Id: ");
                     int medicineId = int.Parse(Console.ReadLine());
-                    medicineService.RemoveMedicine(medicineId);
+                    medicineService.RemoveMedicine(medicineId, myUser.Id);
                 }
                 catch (NotFoundException ex)
                 {
@@ -115,12 +115,12 @@ public class Program
                 {
 
                     Console.WriteLine("----- Update Process -----");
-                    DB.PrintMedicinesInfo();
+                    DB.PrintMedicinesInfo(myUser.Id);
                     Console.Write("Id of medicine that you want update: ");
                     int Id = int.Parse(Console.ReadLine());
                     var tempMedForUpdate = CreateMedicine(myUser.Id);
                     if (!(tempMedForUpdate == null))
-                        medicineService.UpdateMedicine(Id, tempMedForUpdate);
+                        medicineService.UpdateMedicine(Id, tempMedForUpdate, myUser.Id);
                     else
                         Colored.WriteLine("Category is not found", ConsoleColor.Red);
 
@@ -136,7 +136,7 @@ public class Program
                 goto restartMedicineMenu;
             case "4":
                 Console.Clear();
-                GetMedicineBY(medicineService);
+                GetMedicineBY(medicineService, myUser.Id);
                 goto restartMedicineMenu;
             case "5":
                 try
@@ -147,11 +147,11 @@ public class Program
 
                     foreach (var c in DB.categories)
                     {
-                        if (categoryName == c.Name)
+                        if (categoryName == c.Name && myUser.Id == c.UserId)
                             throw new Exception("Category with given name already exist");
                     }
 
-                    categoryService.CreateCategory(new Category(categoryName));
+                    categoryService.CreateCategory(new Category(categoryName, myUser.Id));
                 }
                 catch (Exception ex)
                 {
@@ -159,7 +159,7 @@ public class Program
                 }
                 goto restartMedicineMenu;
             case "6":
-                DB.PrintCategoriesInfo();
+                DB.PrintCategoriesInfo(myUser.Id);
                 goto restartMedicineMenu;
             case "0":
                 Console.Clear();
@@ -171,7 +171,7 @@ public class Program
         goto restartUserMenu;
     }
 
-    private static void GetMedicineBY(MedicineService medicineService)
+    private static void GetMedicineBY(MedicineService medicineService, int userId)
     {
         string option;
     restartGetMedicineMenu:
@@ -191,26 +191,24 @@ public class Program
                 case "1":
                     Console.Write("Medicine id: ");
                     int medicineId = int.Parse(Console.ReadLine());
-
-                    // bool isIdCorrect = int.Parse(Console.ReadLine(), out medicineId);
-                    Console.WriteLine(medicineService.GetMedicineById(medicineId));
+                    medicineService.GetMedicineById(medicineId, userId);
                     break;
                 case "2":
                     Console.Write("Medicine Name: ");
                     string medicineName = Console.ReadLine();
-                    Console.WriteLine(medicineService.GetMedicineByName(medicineName));
+                    medicineService.GetMedicineByName(medicineName, userId);
                     break;
                 case "3":
                     Console.Write("Medicine Category Id: ");
                     int CategoryId = int.Parse(Console.ReadLine());
-                    Medicine[] medicines = medicineService.GetMedicineByCategory(CategoryId);
+                    Medicine[] medicines = medicineService.GetMedicineByCategory(CategoryId, userId);
                     foreach (var med in medicines)
                     {
                         Console.WriteLine(med);
                     }
                     break;
                 case "4":
-                    DB.PrintMedicinesInfo();
+                    DB.PrintMedicinesInfo(userId);
                     break;
                 case "0":
                     Console.Clear();
@@ -240,14 +238,14 @@ public class Program
         Console.Write("Price: ");
         double medicinePrice;
         bool isPriceCorrect = double.TryParse(Console.ReadLine(), out medicinePrice);
-        if (!isPriceCorrect)
+        if (!isPriceCorrect || medicinePrice < 0)
         {
             Colored.WriteLine("Invalid input for price", ConsoleColor.Red);
             goto restartCreation;
         }
 
         Console.WriteLine("Choose category: ");
-        DB.PrintCategoriesInfo();
+        DB.PrintCategoriesInfo(userId);
         Console.Write("Category Id: ");
         int categoryId;
 
@@ -260,7 +258,7 @@ public class Program
 
         foreach (var category in DB.categories)
         {
-            if (category.Id == categoryId)
+            if (category.Id == categoryId && category.UserId == userId)
                 return new Medicine(medicineName, medicinePrice, categoryId, userId);
         }
         return null;
@@ -298,6 +296,5 @@ public class Program
             Colored.WriteLine($"Error: {ex.Message}", ConsoleColor.Red);
             goto restartUserCreation;
         }
-
     }
 }

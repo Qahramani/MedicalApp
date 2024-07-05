@@ -12,28 +12,32 @@ public static class DB
         medicines = new Medicine[0];
     }
 
-    public static void PrintUsersInfo()
+    public static void PrintUsersInfo(int userId)
     {
         Console.WriteLine("- Users List -");
         foreach (var user in users)
         {
+            if(userId == user.Id) 
             Console.WriteLine(user);
         }
     }
-    public static void PrintCategoriesInfo()
+    public static void PrintCategoriesInfo(int userId)
     {
         Console.WriteLine("- Categories List -");
         foreach (var category in categories)
         {
-            Console.WriteLine(category);
+            if (userId == category.UserId)
+
+                Console.WriteLine(category);
         }
     }
-    public static void PrintMedicinesInfo()
+    public static void PrintMedicinesInfo(int userId)
     {
         Console.WriteLine("- Medicines List -");
         foreach (var medicine in medicines)
         {
-            Console.WriteLine(medicine);
+            if (userId == medicine.UserId)
+                Console.WriteLine(medicine);
         }
     }
 }

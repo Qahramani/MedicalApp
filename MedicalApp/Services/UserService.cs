@@ -8,9 +8,10 @@ public class UserService
 {
     public User Login(string email, string password)
     {
+        
         foreach (var user in DB.users)
         {
-            if(user.Password == password && user.Email == email)
+            if(user.Password == password && user.Email.ToLower() == email.ToLower())
                 return user;
         }
 

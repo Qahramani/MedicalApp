@@ -4,7 +4,7 @@ using MedicalApp.Utilities;
 
 namespace MedicalApp.Services;
 
-public class MedicineService 
+public class MedicineService
 {
 
     public void CreateMedicine(Medicine medicine)
@@ -22,32 +22,42 @@ public class MedicineService
         throw new NotFoundException("Category is not found");
     }
 
-    public Medicine[] GetAllMedicines()
-    {
-        return DB.medicines;
-    }
-
-    public Medicine GetMedicineById(int id)
+    public void GetAllMedicines(int userId)
     {
         foreach (var medicine in DB.medicines)
         {
-            if (medicine.Id == id)
-                return medicine;
+            if (medicine.UserId == userId)
+                Console.WriteLine(medicine);
+        }
+    }
+
+    public void GetMedicineById(int medicineId, int userId)
+    {
+        foreach (var medicine in DB.medicines)
+        {
+            if (medicine.Id == medicineId && userId == medicine.UserId)
+            {
+                Console.WriteLine(medicine);
+                return;
+            }
         }
         throw new NotFoundException("Medicine with given Id is not found");
     }
-    public Medicine GetMedicineByName(string name)
+    public void GetMedicineByName(string name , int userId)
     {
         foreach (var medicine in DB.medicines)
         {
-            if (medicine.Name == name)
-                return medicine;
+            if (medicine.Name == name && userId == medicine.UserId)
+            {
+                Console.WriteLine(medicine);
+                return;
+            }
         }
         throw new NotFoundException("Medicine with given name is not found");
     }
 
 
-    public Medicine[] GetMedicineByCategory(int categoryId)
+    public Medicine[] GetMedicineByCategory(int categoryId , int userId)
     {
         Medicine[] result = new Medicine[0];
         for (int i = 0; i < DB.medicines.Length; i++)
@@ -60,34 +70,34 @@ public class MedicineService
         }
         return result.Length > 0 ? result : throw new NotFoundException("Medicine with given Category is not found");
     }
-    public void RemoveMedicine(int id)
+    public void RemoveMedicine(int medicineId, int userId)
     {
         for (int i = 0; i < DB.medicines.Length; i++)
         {
-            if (DB.medicines[i].Id == id)
+            if (DB.medicines[i].Id == medicineId && userId == DB.medicines[i].UserId)
             {
                 for (int j = i; j < DB.medicines.Length - 1; j++)
                 {
                     DB.medicines[j] = DB.medicines[j + 1];
                 }
                 Array.Resize(ref DB.medicines, DB.medicines.Length - 1);
-                Colored.WriteLine("User succesfully removed!", ConsoleColor.Green);
+                Colored.WriteLine("Medicine succesfully removed!", ConsoleColor.Green);
                 return;
             }
         }
         throw new NotFoundException("Medicine with given Id is not found");
     }
 
-    public void UpdateMedicine(int id, Medicine medicine)
+    public void UpdateMedicine(int id, Medicine medicine, int userId)
     {
         for (int i = 0; i < DB.medicines.Length; i++)
         {
-            if (DB.medicines[i].Id == id)
+            if (DB.medicines[i].Id == id && DB.medicines[i].UserId == userId)
             {
                 DB.medicines[i].Name = medicine.Name;
                 DB.medicines[i].Price = medicine.Price;
                 DB.medicines[i].CategoryId = medicine.CategoryId;
-                Colored.WriteLine("User succesfully updated!", ConsoleColor.Green);
+                Colored.WriteLine("Medicine succesfully updated!", ConsoleColor.Green);
                 return;
             }
         }
