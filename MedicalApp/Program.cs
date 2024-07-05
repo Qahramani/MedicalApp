@@ -14,6 +14,7 @@ public class Program
         CategoryService categoryService = new CategoryService();
         User myUser = new("", "", "");
     restartUserMenu:
+        Console.Clear();
         Console.WriteLine("----- User Menu -----");
         Console.Write("[1] Create user\n" +
             "[2] User Login\n" +
@@ -25,6 +26,7 @@ public class Program
         {
             case "1":
                 CreateUser(userService);
+                Console.ReadLine();
                 goto restartUserMenu;
 
             case "2":
@@ -51,6 +53,7 @@ public class Program
                 {
                     Colored.WriteLine($"Error: {ex.Message}", ConsoleColor.Red);
                 }
+                Console.ReadLine();
                 goto restartUserMenu;
             #endregion
             case "0":
@@ -58,6 +61,7 @@ public class Program
                 return;
             default:
                 Console.WriteLine("Please enter valid option");
+                Console.ReadLine();
                 goto restartUserMenu;
         }
         Console.Clear();
@@ -125,7 +129,7 @@ public class Program
                 {
                     Colored.WriteLine($"Error: {ex.Message}", ConsoleColor.Red);
                 }
-                catch(Exception ex)
+                catch (Exception ex)
                 {
                     Colored.WriteLine($"Error: {ex.Message}", ConsoleColor.Red);
                 }
@@ -135,13 +139,26 @@ public class Program
                 GetMedicineBY(medicineService);
                 goto restartMedicineMenu;
             case "5":
-                Console.WriteLine("----- Category creation process -----");
-                Console.Write("Category Name: ");
-                string categoryName = Console.ReadLine();
-                categoryService.CreateCategory(new Category(categoryName));
+                try
+                {
+                    Console.WriteLine("----- Category creation process -----");
+                    Console.Write("Category Name: ");
+                    string categoryName = Console.ReadLine();
+
+                    foreach (var c in DB.categories)
+                    {
+                        if (categoryName == c.Name)
+                            throw new Exception("Category with given name already exist");
+                    }
+
+                    categoryService.CreateCategory(new Category(categoryName));
+                }
+                catch (Exception ex)
+                {
+                    Colored.WriteLine($"Error: {ex.Message}", ConsoleColor.Red);
+                }
                 goto restartMedicineMenu;
             case "6":
-                Console.WriteLine("----- Categories List -----");
                 DB.PrintCategoriesInfo();
                 goto restartMedicineMenu;
             case "0":

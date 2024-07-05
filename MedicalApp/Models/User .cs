@@ -12,7 +12,7 @@ public class User : BaseEntity
         Fullname = fullname;
         Email = email;
         Password = password;
-        Id = ++_id;
+        Id = _id++;
     }
     public override string ToString()
     {
