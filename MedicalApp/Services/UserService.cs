@@ -22,9 +22,9 @@ public class UserService
     {
         foreach (var usr in DB.users)
         {
-            if(usr.Email == user.Email)
+            if(usr.Email.ToLower() == user.Email.ToLower())
             {
-                throw new NotFoundException("User with given Email is already exist");
+                throw new UserAlreadyExistException("User with given Email is already exist");
             }
         }
         Array.Resize(ref DB.users, DB.users.Length + 1);

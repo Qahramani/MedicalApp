@@ -37,7 +37,7 @@ public static class Validations
             }
             else if(!char.IsLetter(email[i]) && !char.IsDigit(email[i]) && !(email[i] == '.'))
             {
-                throw new WrongEmailException("email can contain only letters, numbers, underscore, dot and(one @ tag)");
+                throw new WrongEmailException("email can contain only letters, numbers, underscore, dot and one @ tag");
             }
         }
         if (counter != 1)

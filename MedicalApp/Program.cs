@@ -42,19 +42,20 @@ public class Program
                 {
                     myUser = userService.Login(email, password);
                     Console.Clear();
-                    break;
                 }
                 catch (UserNotFoundException ex)
                 {
                     Colored.WriteLine($"Error: {ex.Message}", ConsoleColor.Red);
+                    Console.ReadLine();
                     goto restartUserMenu;
                 }
                 catch (Exception ex)
                 {
                     Colored.WriteLine($"Error: {ex.Message}", ConsoleColor.Red);
+                    Console.ReadLine();
+                    goto restartUserMenu;
                 }
-                Console.ReadLine();
-                goto restartUserMenu;
+                break;
             #endregion
             case "0":
                 Colored.WriteLine("Goodbye!", ConsoleColor.DarkYellow);
@@ -64,11 +65,11 @@ public class Program
                 Console.ReadLine();
                 goto restartUserMenu;
         }
-        Console.Clear();
-        Console.WriteLine($"Welcome, {myUser.Fullname}!");
 
     restartMedicineMenu:
-
+        Console.Clear();
+        Console.WriteLine($"Welcome, {myUser.Fullname}!");
+        
         Console.WriteLine("----- Medicine service Menu -----");
         Console.Write("[1] Create Medicine\n" +
             "[2] Remove Medicine\n" +
@@ -91,6 +92,7 @@ public class Program
                 {
                     Colored.WriteLine("Category is not found", ConsoleColor.Red);
                 }
+                Console.ReadLine();
                 goto restartMedicineMenu;
             case "2":
                 try
@@ -109,6 +111,7 @@ public class Program
                 {
                     Colored.WriteLine($"Error: {ex.Message}", ConsoleColor.Red);
                 }
+                Console.ReadLine();
                 goto restartMedicineMenu;
             case "3":
                 try
@@ -133,6 +136,7 @@ public class Program
                 {
                     Colored.WriteLine($"Error: {ex.Message}", ConsoleColor.Red);
                 }
+                Console.ReadLine();
                 goto restartMedicineMenu;
             case "4":
                 Console.Clear();
@@ -144,6 +148,9 @@ public class Program
                     Console.WriteLine("----- Category creation process -----");
                     Console.Write("Category Name: ");
                     string categoryName = Console.ReadLine();
+
+                    if (categoryName == "")
+                        throw new NullReferenceException("Name cannot be empty");
 
                     foreach (var c in DB.categories)
                     {
@@ -157,15 +164,18 @@ public class Program
                 {
                     Colored.WriteLine($"Error: {ex.Message}", ConsoleColor.Red);
                 }
+                Console.ReadLine();
                 goto restartMedicineMenu;
             case "6":
                 DB.PrintCategoriesInfo(myUser.Id);
+                Console.ReadLine();
                 goto restartMedicineMenu;
             case "0":
                 Console.Clear();
                 break;
             default:
-                Console.WriteLine("Please enter valid input");
+                Colored.WriteLine("Please enter valid input", ConsoleColor.Red);
+                Console.ReadLine();
                 goto restartMedicineMenu;
         }
         goto restartUserMenu;
@@ -235,6 +245,13 @@ public class Program
         Console.WriteLine("----- Creation Process -----");
         Console.Write("Medicine name: ");
         string medicineName = Console.ReadLine();
+
+        if(medicineName == "")
+        {
+            Colored.WriteLine("Name cannot be empty", ConsoleColor.Red);
+            goto restartCreation;
+        }
+
         Console.Write("Price: ");
         double medicinePrice;
         bool isPriceCorrect = double.TryParse(Console.ReadLine(), out medicinePrice);
@@ -292,6 +309,11 @@ public class Program
             goto restartUserCreation;
         }
         catch (WrongEmailException ex)
+        {
+            Colored.WriteLine($"Error: {ex.Message}", ConsoleColor.Red);
+            goto restartUserCreation;
+        }
+        catch (UserAlreadyExistException ex)
         {
             Colored.WriteLine($"Error: {ex.Message}", ConsoleColor.Red);
             goto restartUserCreation;
