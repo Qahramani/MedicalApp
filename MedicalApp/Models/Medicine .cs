@@ -20,7 +20,15 @@ public class Medicine : BaseEntity
     }
     public override string ToString()
     {
-        return $"Medicine Name: {Name}, Price: {Price}, CategoryId: {CategoryId}, UserId: {UserId}, " +
-            $"Creatinon Date: {CreatedDate}, Id: {Id}";
+        string categoryName = "";
+        foreach (var c in DB.categories)
+        {
+            if(CategoryId == c.Id)
+                 categoryName = c.Name;
+
+        }
+
+        return $"Medicine Name: {Name}, Price: {Price} AZN, CategoryId: {CategoryId}, CategoryName: {categoryName}, UserId: {UserId}, " +
+            $"Creation Date: {CreatedDate}, Id: {Id}";
     }
 }

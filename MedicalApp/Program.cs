@@ -2,7 +2,6 @@
 using MedicalApp.Models;
 using MedicalApp.Services;
 using MedicalApp.Utilities;
-using System.Text;
 
 namespace MedicalApp;
 
@@ -35,9 +34,9 @@ public class Program
 
                 Console.WriteLine("----- Login Process -----");
                 Console.Write("Email: ");
-                string email = Console.ReadLine();
+                string email = Console.ReadLine().Trim();
                 Console.Write("Password: ");
-                string password = Console.ReadLine();
+                string password = Console.ReadLine().Trim();
 
                 try
                 {
@@ -209,7 +208,7 @@ public class Program
                     break;
                 case "2":
                     Console.Write("Medicine Name: ");
-                    string medicineName = Console.ReadLine();
+                    string medicineName = Console.ReadLine().Trim();
                     medicineService.GetMedicineByName(medicineName, userId);
                     break;
                 case "3":
@@ -249,6 +248,15 @@ public class Program
         Console.WriteLine("----- Creation Process -----");
         Console.Write("Medicine name: ");
         string medicineName = Console.ReadLine().Trim();
+
+        foreach (var medicine in DB.medicines)
+        {
+            if(medicine.Name == medicineName && medicine.Id == userId)
+            {
+                Colored.WriteLine("Medicine with same name already exist", ConsoleColor.Red);
+                goto restartCreation;
+            }
+        }
 
         if(string.IsNullOrEmpty(medicineName))
         {
@@ -300,13 +308,13 @@ public class Program
                 goto restartUserCreation;
             }
             Console.Write("Email: ");
-            string userEmail = Console.ReadLine();
+            string userEmail = Console.ReadLine().Trim();
 
 
             Validations.IsEmailCorrect(userEmail);
 
             Console.Write("Password: ");
-            string userPassword = Console.ReadLine();
+            string userPassword = Console.ReadLine().Trim();
 
 
             Validations.IsPasswordCorrect(userPassword);
@@ -326,6 +334,11 @@ public class Program
             goto restartUserCreation;
         }
         catch (UserAlreadyExistException ex)
+        {
+            Colored.WriteLine($"Error: {ex.Message}", ConsoleColor.Red);
+            goto restartUserCreation;
+        }
+        catch(Exception ex)
         {
             Colored.WriteLine($"Error: {ex.Message}", ConsoleColor.Red);
             goto restartUserCreation;

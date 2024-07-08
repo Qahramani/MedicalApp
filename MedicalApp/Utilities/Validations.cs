@@ -11,6 +11,9 @@ public static class Validations
         bool isDigit = false;
         for (int i = 0; i < password.Length; i++)
         {
+            if (password[i] == ' ')
+                throw new WrongPasswordException("Password cannot contain whitespaces");
+
             if (char.IsUpper(password[i]))
             isUpper = true;
             else if (char.IsLower(password[i]))
