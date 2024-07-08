@@ -21,7 +21,7 @@ public static class Validations
                 return;
         }
         
-        throw new WrongPasswordException("Password should contain lower and upper letters, digit and length should be >= 5");
+        throw new WrongPasswordException("Password should contain lower and upper letters, digits and length should be >= 5");
     }
 
     public static void IsEmailCorrect(string email)

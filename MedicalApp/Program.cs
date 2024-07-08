@@ -2,6 +2,7 @@
 using MedicalApp.Models;
 using MedicalApp.Services;
 using MedicalApp.Utilities;
+using System.Text;
 
 namespace MedicalApp;
 
@@ -66,6 +67,9 @@ public class Program
                 goto restartUserMenu;
         }
 
+        //Console.OutputEncoding = Encoding.UTF8;
+        //string helloEmoji = char.ConvertFromUtf32(0x1F600);
+        string.IsNullOrWhiteSpace("      ");
     restartMedicineMenu:
         Console.Clear();
         Console.WriteLine($"Welcome, {myUser.Fullname}!");
@@ -147,9 +151,9 @@ public class Program
                 {
                     Console.WriteLine("----- Category creation process -----");
                     Console.Write("Category Name: ");
-                    string categoryName = Console.ReadLine();
+                    string categoryName = Console.ReadLine().Trim();
 
-                    if (categoryName == "")
+                    if (string.IsNullOrEmpty(categoryName))
                         throw new NullReferenceException("Name cannot be empty");
 
                     foreach (var c in DB.categories)
@@ -244,9 +248,9 @@ public class Program
     restartCreation:
         Console.WriteLine("----- Creation Process -----");
         Console.Write("Medicine name: ");
-        string medicineName = Console.ReadLine();
+        string medicineName = Console.ReadLine().Trim();
 
-        if(medicineName == "")
+        if(string.IsNullOrEmpty(medicineName))
         {
             Colored.WriteLine("Name cannot be empty", ConsoleColor.Red);
             goto restartCreation;
@@ -288,14 +292,22 @@ public class Program
         try
         {
             Console.Write("Fullname: ");
-            string userName = Console.ReadLine();
+            string userName = Console.ReadLine().Trim();
+
+            if (string.IsNullOrWhiteSpace(userName))
+            {
+                Colored.WriteLine("Input cannot be null or whitespace", ConsoleColor.Red);
+                goto restartUserCreation;
+            }
             Console.Write("Email: ");
             string userEmail = Console.ReadLine();
+
 
             Validations.IsEmailCorrect(userEmail);
 
             Console.Write("Password: ");
             string userPassword = Console.ReadLine();
+
 
             Validations.IsPasswordCorrect(userPassword);
 
